@@ -2,11 +2,11 @@ const puppeteer = require("puppeteer");
 const credentials = require("./credentials.js");
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: true, args: ["--window-size=1366,800"] });
+  const browser = await puppeteer.launch({ headless: false, args: ["--window-size=1366,800"] });
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
   console.log("Visiting Discord");
-  await page.goto("https://discord.com/channels/478967551876136990/895015513435029575");
+  await page.goto(credentials.channelAddress);
 
   const [button] = await page.$x("//button[contains(.,'Im Browser fortfahren')]");
   if (button) {
@@ -26,27 +26,37 @@ const credentials = require("./credentials.js");
   await page.waitForSelector("div[role='textbox']", { visible: true });
 
   async function goToWork(x) {
-    console.log("Go fishing");
-    await page.keyboard.type("p!withdraw 50", { delay: 50 });
+    console.log("Play high low");
+    await page.keyboard.type("p!highlow", { delay: 50 });
+    await page.keyboard.press("Enter");
+    const randNumber = Math.floor(Math.random() * 2);
+    const enterText = randNumber == 0 ? "higher" : "lower";
+    await page.keyboard.type(enterText, { delay: 100 });
     await page.keyboard.press("Enter");
 
-    await page.keyboard.type("p!buy rod", { delay: 50 });
-    await page.keyboard.press("Enter");
+    if (x % 2 == 0) {
+      console.log("Go fishing");
+      await page.keyboard.type("p!withdraw 50", { delay: 50 });
+      await page.keyboard.press("Enter");
 
-    try {
-      await page.waitForSelector("div.reactionInner-YJjOtT", { timeout: 3000 });
-    } catch {}
+      await page.keyboard.type("p!buy rod", { delay: 50 });
+      await page.keyboard.press("Enter");
 
-    const checkmark = await page.$("div.reactionInner-YJjOtT");
-    if (checkmark) {
-      console.log("Buying fishing rod");
-      await page.evaluate(() => document.querySelector(".reactionInner-YJjOtT").click());
+      try {
+        await page.waitForSelector("div.reactionInner-YJjOtT", { timeout: 3000 });
+      } catch {}
+
+      const checkmark = await page.$("div.reactionInner-YJjOtT");
+      if (checkmark) {
+        console.log("Buying fishing rod");
+        await page.evaluate(() => document.querySelector(".reactionInner-YJjOtT").click());
+      }
+
+      await page.keyboard.type("p!fish", { delay: 50 });
+      await page.keyboard.press("Enter");
     }
 
-    await page.keyboard.type("p!fish", { delay: 50 });
-    await page.keyboard.press("Enter");
-
-    if (x % 10 == 0) {
+    if (x % 20 == 0) {
       console.log("Playing trivia");
       await page.keyboard.type("p!trivia hard", { delay: 50 });
       await page.keyboard.press("Enter");
@@ -56,7 +66,7 @@ const credentials = require("./credentials.js");
       await page.keyboard.press("Enter");
     }
 
-    if (x % 5 == 0) {
+    if (x % 10 == 0) {
       console.log("time to go to work");
       await page.keyboard.type("p!work", { delay: 50 });
       await page.keyboard.press("Enter");
@@ -64,19 +74,21 @@ const credentials = require("./credentials.js");
       console.log("Selling all items");
       await page.keyboard.type("p!sell all", { delay: 50 });
       await page.keyboard.press("Enter");
-      await page.waitForSelector("div.reactionInner-YJjOtT", { timeout: 3000 });
+      try {
+        await page.waitForSelector("div.reactionInner-YJjOtT", { timeout: 3000 });
 
-      const checkmark = await page.$("div.reactionInner-YJjOtT");
-      if (checkmark) {
-        await page.evaluate(() => document.querySelector(".reactionInner-YJjOtT").click());
-      }
+        const checkmark = await page.$("div.reactionInner-YJjOtT");
+        if (checkmark) {
+          await page.evaluate(() => document.querySelector(".reactionInner-YJjOtT").click());
+        }
+      } catch {}
 
       await page.keyboard.type("p!deposit all", { delay: 50 });
       await page.keyboard.press("Enter");
     }
-    console.log("Waiting for 1 minute...");
-    await page.waitForTimeout(1000 * 60);
-    await goToWork((x + 1) % 10);
+    console.log("Waiting for 30 seconds...");
+    await page.waitForTimeout(1000 * 30);
+    await goToWork((x + 1) % 20);
   }
   await goToWork(0);
 
