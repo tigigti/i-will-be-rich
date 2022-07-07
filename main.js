@@ -46,7 +46,17 @@ const credentials = require("./credentials.js");
     await page.keyboard.type("p!fish", { delay: 50 });
     await page.keyboard.press("Enter");
 
-    if (x == 0) {
+    if (x % 10 == 0) {
+      console.log("Playing trivia");
+      await page.keyboard.type("p!trivia hard", { delay: 50 });
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(2000);
+      const randNumber = Math.floor(Math.random() * 4) + 1;
+      await page.keyboard.type(randNumber.toString());
+      await page.keyboard.press("Enter");
+    }
+
+    if (x % 5 == 0) {
       console.log("time to go to work");
       await page.keyboard.type("p!work", { delay: 50 });
       await page.keyboard.press("Enter");
@@ -66,7 +76,7 @@ const credentials = require("./credentials.js");
     }
     console.log("Waiting for 1 minute...");
     await page.waitForTimeout(1000 * 60);
-    await goToWork((x + 1) % 5);
+    await goToWork((x + 1) % 10);
   }
   await goToWork(0);
 
