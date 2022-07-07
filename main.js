@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 const credentials = require("./credentials.js");
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false, args: ["--window-size=1366,800"] });
+  const browser = await puppeteer.launch({ headless: true, args: ["--window-size=1366,800"] });
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
   console.log("Visiting Discord");
